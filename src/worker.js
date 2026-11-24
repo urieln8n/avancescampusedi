@@ -106,7 +106,10 @@ async function api(req, env, url) {
     if (!nombre || clave.length < 8) return error('Pon un nombre y una contraseña de al menos 8 caracteres');
     if (await env.DB.prepare('SELECT 1 FROM usuarios WHERE nombre = ?').bind(nombre).first()) return error('Ese nombre ya existe');
     const salt = hex(crypto.getRandomValues(new Uint8Array(16))), uid = id();
-    await env.DB.prepare('INSERT INTO usuarios (id, nombre, hash, salt) VALUES (?, ?, ?, ?)').bind(uid, nombre, await hashClave(clave, salt), salt).run();
+    await env.DB.batch([
+      env.DB.prepare('INSERT INTO usuarios (id, nombre, hash, salt) VALUES (?, ?, ?, ?)').bind(uid, nombre, await hashClave(clave, salt), salt),
+      env.DB.prepare("DELETE FROM ajustes WHERE clave = 'codigo_alta'") // el código solo vale una vez
+    ]);
     return abrirSesion(env, uid);
   }
   if (ruta[0] === 'entrar' && metodo === 'POST') {
