@@ -377,6 +377,7 @@ T.addEventListener('dragend', () => { arrastrando = null; T.querySelectorAll('.s
 /* ---------- Rutas: inicio · presupuesto · taller ---------- */
 function ruta(){
   const h = location.hash.slice(1);
+  if (h === 'taller') { location.replace('/taller/'); return; }
   const v = h === 'presupuesto' ? 'presupuesto' : h === 'taller' ? 'taller' : 'inicio';
   document.querySelectorAll('.vista').forEach(el => el.hidden = el.id !== 'v-' + v);
   document.title = v === 'taller' ? 'Puntada · Taller' : v === 'presupuesto' ? 'Pide presupuesto · Avancés Campus' : 'Avancés para caravana a medida en Barcelona | Avancés Campus';

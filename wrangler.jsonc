@@ -1,6 +1,10 @@
 {
-  // Web estática de Avancés Campus en Cloudflare Workers (static assets)
+  // Web de Avancés Campus + panel del taller (/taller) con API (/api) y base de datos D1
   "name": "avancescampusedi",
+  "main": "src/worker.js",
   "compatibility_date": "2026-11-01",
-  "assets": { "directory": "./public" }
+  "assets": { "directory": "./public", "binding": "ASSETS" },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "avances-taller", "database_id": "4db71cef-c207-42d9-b190-8dc7f9d87cae", "migrations_dir": "migrations" }
+  ]
 }

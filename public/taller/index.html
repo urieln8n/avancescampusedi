@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#1f2a44">
+<title>Panel del taller · Avancés Campus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/*
+VOICE: herramienta de trabajo: clara, rápida, botones grandes para usar con las manos ocupadas.
+IDEA: el cuaderno del taller hecho app: pedidos, clientes, lona y gastos en un sitio.
+PICTURE: el resumen con las cifras del mes y el tablero de pedidos por fases.
+COLOUR and TYPE: azul marino de la lona, gris lona y verde de la etiqueta del taller; Barlow Condensed + Barlow.
+LAYOUT: barra lateral en ordenador, pestañas abajo en el móvil; tarjetas y tablas que se apilan.
+*/
+:root{color-scheme:light dark;
+  --bg:light-dark(#eef0f3,#0f141d);--card:light-dark(#fff,#18202c);--ink:light-dark(#141b29,#eef1f5);--soft:light-dark(#5b6474,#9fa9b8);
+  --line:light-dark(#dde1e7,#273142);--navy:#1f2a44;--verde:#3f9c3a;--rojo:light-dark(#c62828,#ff6b6b);--ambar:light-dark(#9a6700,#f3c34b);--fondo2:light-dark(#f6f7f9,#141b26)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Barlow,system-ui,sans-serif}
+h1,h2,h3{font-family:"Barlow Condensed",Barlow,sans-serif;line-height:1.1;margin:0 0 .4em}
+h1{font-size:30px}h2{font-size:24px}h3{font-size:19px}
+button,input,select,textarea{font:inherit;font-size:16px;color:inherit}
+:focus-visible{outline:3px solid var(--verde);outline-offset:2px}
+[hidden]{display:none!important}
+a{color:inherit}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 16px;border:0;border-radius:10px;background:var(--verde);color:#fff;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{filter:brightness(1.07)}
+.btn-2{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
+.btn-2:hover{border-color:var(--soft);filter:none}
+.btn-rojo{background:transparent;color:var(--rojo);border:1.5px solid var(--line)}
+.btn-sm{min-height:36px;padding:0 12px;font-size:14px}
+
+/* Estructura */
+.app{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh}
+.lado{background:var(--navy);color:#fff;padding:18px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px}
+.lado .marca{font:700 22px "Barlow Condensed",sans-serif;padding:4px 10px 16px}
+.lado .marca small{display:block;font:500 13px Barlow,sans-serif;color:#b8c3d6}
+.tab{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:0 12px;border:0;border-radius:10px;background:none;color:#dfe5ee;cursor:pointer;text-align:left;font-weight:600}
+.tab svg{width:20px;height:20px;flex:none}
+.tab[aria-current=page]{background:#ffffff1f;color:#fff}
+.tab:hover{background:#ffffff14}
+.lado .pie{margin-top:auto;font-size:13px;color:#b8c3d6;padding:10px}
+.main{padding:22px clamp(14px,3vw,32px) 90px;max-width:1300px}
+.cab{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.cab h1{margin:0}
+.acciones{display:flex;flex-wrap:wrap;gap:8px}
+.tarjeta{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.rejilla{display:grid;gap:14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.kpi span{display:block;color:var(--soft);font-size:14px;font-weight:500}
+.kpi b{display:block;font:700 30px "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums}
+.kpi small{color:var(--soft);font-size:13px}
+.kpi.bien b{color:var(--verde)}.kpi.mal b{color:var(--rojo)}
+.dos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.barra{display:grid;grid-template-columns:130px minmax(0,1fr) 40px;align-items:center;gap:10px;margin:7px 0;font-size:14px}
+.barra i{display:block;height:12px;border-radius:6px;background:var(--navy)}
+.barra em{font-style:normal;text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.meses{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;align-items:end;height:170px;margin-top:8px}
+.mes{display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;font-size:12px;color:var(--soft)}
+.mes .pila{display:flex;gap:3px;align-items:flex-end;height:130px}
+.mes .pila i{width:14px;border-radius:4px 4px 0 0;background:var(--verde)}
+.mes .pila i+i{background:var(--rojo)}
+.ley{display:flex;gap:14px;font-size:13px;color:var(--soft);margin-top:6px}
+.ley i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.lista{list-style:none;padding:0;margin:0}
+.lista li{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:15px}
+.lista li:first-child{border-top:0}
+.lista small{color:var(--soft)}
+.vacio{color:var(--soft);font-size:14px;padding:6px 0}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.pos{color:var(--verde)}.neg{color:var(--rojo)}
+.chip{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--fondo2);color:var(--soft);white-space:nowrap}
+.chip.rojo{background:light-dark(#fde8e8,#3a1d1d);color:var(--rojo)}
+.chip.ambar{background:light-dark(#fff3d6,#3b3218);color:var(--ambar)}
+.chip.verde{background:light-dark(#e6f4e5,#1b2e1c);color:var(--verde)}
+
+/* Tablero de pedidos */
+.tablero{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x proximity}
+.col{flex:0 0 270px;background:light-dark(#e3e7ec,#141b26);border-radius:12px;padding:10px;scroll-snap-align:start;min-height:120px}
+.col.sobre{outline:3px dashed var(--verde)}
+.col h3{display:flex;justify-content:space-between;font-size:17px;margin:2px 4px 10px}
+.col h3 span{font:600 13px Barlow,sans-serif;color:var(--soft);background:var(--card);border-radius:20px;padding:1px 8px}
+.ped{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--navy);border-radius:10px;padding:10px 12px;margin-bottom:8px;cursor:pointer}
+.ped:hover{border-color:var(--soft)}
+.ped b{display:block;font-size:16px}.ped span{display:block;color:var(--soft);font-size:14px}
+.ped .meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+
+/* Tablas */
+.tabla{width:100%;border-collapse:collapse;font-size:15px}
+.tabla th{text-align:left;font-size:13px;color:var(--soft);font-weight:600;padding:8px;border-bottom:1px solid var(--line)}
+.tabla td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tabla tr.clic{cursor:pointer}.tabla tr.clic:hover td{background:var(--fondo2)}
+.tabla .num{text-align:right}
+.buscar{min-height:44px;padding:0 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);flex:1 1 220px;max-width:360px}
+
+/* Formularios y ventanas */
+.modal{position:fixed;inset:0;z-index:30;background:#0009;display:grid;place-items:center;padding:12px}
+.caja{width:min(760px,100%);max-height:calc(100vh - 24px);overflow:auto;background:var(--bg);border-radius:16px;padding:20px clamp(14px,3vw,26px) 24px}
+.caja .cab{position:sticky;top:-20px;background:var(--bg);padding-top:4px;z-index:2}
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.form .ancho{grid-column:1/-1}
+.fld{display:block}
+.fld>span{display:block;font-size:14px;color:var(--soft);margin-bottom:4px;font-weight:500}
+.fld input,.fld select,.fld textarea{width:100%;min-height:44px;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card)}
+.fld textarea{min-height:84px;resize:vertical}
+.fld input[type=checkbox]{width:22px;min-height:22px;accent-color:var(--verde);vertical-align:middle}
+.seccion{margin-top:20px;padding-top:14px;border-top:1px solid var(--line)}
+.fases{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.fases button{min-height:36px;padding:0 10px;border-radius:20px;border:1.5px solid var(--line);background:var(--card);cursor:pointer;font-size:14px}
+.fases button[aria-pressed=true]{background:var(--navy);border-color:var(--navy);color:#fff}
+.cuentas{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:10px 0}
+.cuentas div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.cuentas span{display:block;font-size:13px;color:var(--soft)}
+.cuentas b{font:700 22px "Barlow Condensed",sans-serif}
+.error{color:var(--rojo);font-weight:600;min-height:1.4em;margin:8px 0 0}
+.aviso{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);z-index:40;background:var(--navy);color:#fff;padding:12px 18px;border-radius:10px;box-shadow:0 8px 24px #0005;max-width:92vw}
+
+/* Acceso */
+.acceso{min-height:100vh;display:grid;place-items:center;padding:20px;background:var(--navy)}
+.acceso .tarjeta{width:min(420px,100%)}
+.acceso h1{color:var(--ink)}
+
+@media (max-width:860px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .lado{position:fixed;inset:auto 0 0 0;height:auto;z-index:20;flex-direction:row;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom));gap:0}
+  .lado .marca,.lado .pie{display:none}
+  .tab{flex-direction:column;gap:2px;min-height:52px;padding:4px 2px;font-size:11px;justify-content:center;text-align:center}
+  .tab[data-v=ajustes]{display:none}
+  .dos,.form{grid-template-columns:minmax(0,1fr)}
+  .cuentas{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .barra{grid-template-columns:110px minmax(0,1fr) 34px}
+  .tabla.apila thead{display:none}
+  .tabla.apila tr{display:grid;grid-template-columns:1fr auto;padding:10px 4px;border-bottom:1px solid var(--line)}
+  .tabla.apila td{border:0;padding:2px 4px}
+  .tabla.apila td.ocultar{display:none}
+  .col{flex-basis:82vw}
+}
+</style>
+</head>
+<body>
+<div id="raiz"></div>
+<div id="modal" class="modal" hidden><div class="caja" id="caja" role="dialog" aria-modal="true"></div></div>
+<div id="aviso" class="aviso" role="status" hidden></div>
+
+<script>
+{
+/* ================= Utilidades ================= */
+const $ = s => document.querySelector(s);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const eur = n => (Number(n) || 0).toLocaleString('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 });
+const eur0 = n => (Number(n) || 0).toLocaleString('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+const nfmt = n => (Number(n) || 0).toLocaleString('es-ES', { maximumFractionDigits: 2 });
+const hoy = () => new Date().toISOString().slice(0, 10);
+const fCorta = f => { if (!f) return ''; const [a, m, d] = f.slice(0, 10).split('-'); return `${+d}/${+m}/${a.slice(2)}`; };
+const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+function aviso(t) { const a = $('#aviso'); a.textContent = t; a.hidden = false; clearTimeout(aviso.t); aviso.t = setTimeout(() => a.hidden = true, 2600); }
+
+async function api(ruta, metodo = 'GET', cuerpo) {
+  const r = await fetch('/api/' + ruta, { method: metodo, headers: { 'content-type': 'application/json', 'x-taller': '1' }, body: cuerpo ? JSON.stringify(cuerpo) : undefined, credentials: 'same-origin' });
+  const d = await r.json().catch(() => ({}));
+  if (r.status === 401 && ruta !== 'entrar') { mostrarAcceso(); throw new Error(d.error || 'Sesión caducada'); }
+  if (!r.ok) throw new Error(d.error || 'Algo ha fallado');
+  return d;
+}
+const FASES = [['nuevo', 'Presupuesto nuevo'], ['medidas', 'Medidas tomadas'], ['aceptado', 'Aceptado'], ['cortando', 'Cortando'], ['cosiendo', 'Cosiendo'], ['montaje', 'Montaje y prueba'], ['listo', 'Listo para entregar'], ['entregado', 'Entregado']];
+const nomFase = id => (FASES.find(f => f[0] === id) || [, id])[1];
+const CAT_GASTO = ['Material', 'Herramientas', 'Transporte y gasolina', 'Alquiler', 'Luz y agua', 'Seguros e impuestos', 'Publicidad', 'Otros'];
+const METODOS = ['Efectivo', 'Bizum', 'Transferencia', 'Tarjeta'];
+const UNIDADES = ['m', 'm²', 'ud', 'rollo', 'kg', 'caja'];
+const AJ = { whatsapp: '34632083624', medidas: 'Longitud del carril (cm)\nAltura suelo-carril (cm)\nFondo del avancé (cm)\nAltura del lateral (cm)',
+  aviso_medidas: 'Hola {nombre}: somos Avancés Campus. ¿Qué día podemos pasar por {lugar} a tomar las medidas de tu caravana?',
+  aviso_aceptado: 'Hola {nombre}: confirmamos tu pedido ({trabajo}). Te avisamos en cuanto esté listo. Avancés Campus',
+  aviso_montaje: 'Hola {nombre}: tu {trabajo} está terminado. ¿Qué día te va bien para el montaje en {lugar}? Avancés Campus',
+  aviso_listo: 'Hola {nombre}: ¡tu {trabajo} ya está listo! ¿Cuándo te va bien la entrega? Avancés Campus',
+  aviso_otro: 'Hola {nombre}, te escribimos de Avancés Campus sobre tu {trabajo}.' };
+const ICONOS = {
+  resumen: '<path d="M3 13h8V3H3zm10 8h8V11h-8zM3 21h8v-6H3zm10-18v6h8V3z"/>',
+  pedidos: '<path d="M4 4h4v16H4zm6 0h4v10h-4zm6 0h4v13h-4z"/>',
+  clientes: '<path d="M16 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4zM8 12a3 3 0 1 0-3-3 3 3 0 0 0 3 3zm8 1c-2.7 0-8 1.3-8 4v3h16v-3c0-2.7-5.3-4-8-4zM8 14c-.3 0-.8 0-1.2.1A4.6 4.6 0 0 1 9 17v3H1v-2.5C1 15.3 5.4 14 8 14z"/>',
+  materiales: '<path d="M21 7 12 2 3 7v10l9 5 9-5zM12 4.3 18.6 8 12 11.7 5.4 8zM5 9.7l6 3.4v6.6l-6-3.3zm8 10v-6.6l6-3.4v6.7z"/>',
+  gastos: '<path d="M12 1a11 11 0 1 0 11 11A11 11 0 0 0 12 1zm1 17.9V20h-2v-1.1A4 4 0 0 1 8 15h2a2 2 0 0 0 2 2c1.1 0 2-.6 2-1.5 0-1-.9-1.4-2.5-1.9C9.7 13 8.3 12.3 8.3 10.3A3.5 3.5 0 0 1 11 7.1V6h2v1.1A3.7 3.7 0 0 1 15.7 10h-2a1.8 1.8 0 0 0-1.9-1.6c-1 0-1.8.5-1.8 1.4s.8 1.3 2.4 1.8c1.9.6 3.3 1.4 3.3 3.5a3.6 3.6 0 0 1-2.7 3.8z"/>',
+  ajustes: '<path d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.2 7.2 0 0 0-1.7-1L15 3h-4l-.4 2.9a7.2 7.2 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.6 7.6 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.2 7.2 0 0 0 1.7 1L11 21h4l.4-2.9a7.2 7.2 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 3.5-3.5 3.5 3.5 0 0 1-3.5 3.5z"/>'
+};
+const VISTAS = [['resumen', 'Resumen'], ['pedidos', 'Pedidos'], ['clientes', 'Clientes'], ['materiales', 'Material'], ['gastos', 'Gastos'], ['ajustes', 'Ajustes']];
+
+/* ================= Estado ================= */
+let D = { clientes: [], pedidos: [], materiales: [], gastos: [], cobros: [], ajustes: { ...AJ } };
+let vista = 'resumen', usuario = null, filtro = '';
+async function cargar(...que) {
+  const todas = que.length ? que : ['clientes', 'pedidos', 'materiales', 'gastos', 'cobros'];
+  const r = await Promise.all(todas.map(t => api(t)));
+  todas.forEach((t, i) => D[t] = r[i]);
+}
+async function cargarAjustes() { D.ajustes = { ...AJ, ...(await api('ajustes')) }; }
+
+/* ================= Acceso ================= */
+async function iniciar() {
+  try {
+    const e = await (await fetch('/api/estado', { credentials: 'same-origin' })).json();
+    if (e.usuario) { usuario = e.usuario; await Promise.all([cargar(), cargarAjustes()]); pintarApp(); }
+    else mostrarAcceso(e.hayUsuarios);
+  } catch { $('#raiz').innerHTML = '<div class="acceso"><div class="tarjeta"><h1>Sin conexión</h1><p>No se puede conectar con el panel. Revisa internet y recarga.</p></div></div>'; }
+}
+function mostrarAcceso(hayUsuarios = true) {
+  $('#modal').hidden = true;
+  $('#raiz').innerHTML = `<div class="acceso"><form class="tarjeta" id="facc">
+    <h1>${hayUsuarios ? 'Panel del taller' : 'Crear el primer acceso'}</h1>
+    <p style="color:var(--soft);margin-top:0">${hayUsuarios ? 'Avancés Campus · entra con tu usuario.' : 'Pon el código de alta que te ha dado Andrés, tu nombre y una contraseña.'}</p>
+    ${hayUsuarios ? '' : '<label class="fld"><span>Código de alta</span><input name="codigo" required autocomplete="off"></label>'}
+    <label class="fld" style="margin-top:10px"><span>Nombre</span><input name="nombre" required autocomplete="username"></label>
+    <label class="fld" style="margin-top:10px"><span>Contraseña${hayUsuarios ? '' : ' (mínimo 8)'}</span><input name="clave" type="password" required minlength="${hayUsuarios ? 1 : 8}" autocomplete="${hayUsuarios ? 'current-password' : 'new-password'}"></label>
+    <p class="error" id="eacc"></p>
+    <button class="btn" style="width:100%">${hayUsuarios ? 'Entrar' : 'Crear y entrar'}</button>
+    ${hayUsuarios ? '<p style="font-size:14px;color:var(--soft)">¿Es tu primera vez? <a href="#" id="alta">Tengo un código de alta</a></p>' : ''}
+    <p style="font-size:14px"><a href="/">‹ Volver a la web</a></p></form></div>`;
+  $('#alta')?.addEventListener('click', ev => { ev.preventDefault(); mostrarAcceso(false); });
+  $('#facc').addEventListener('submit', async ev => {
+    ev.preventDefault(); const f = Object.fromEntries(new FormData(ev.target));
+    try { await api(hayUsuarios ? 'entrar' : 'alta', 'POST', f); iniciar(); }
+    catch (e) { $('#eacc').textContent = e.message; }
+  });
+}
+
+/* ================= Esqueleto ================= */
+function pintarApp() {
+  $('#raiz').innerHTML = `<div class="app">
+    <nav class="lado" aria-label="Secciones">
+      <div class="marca">Avancés Campus<small>Panel del taller</small></div>
+      ${VISTAS.map(([v, n]) => `<button class="tab" data-v="${v}"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">${ICONOS[v]}</svg>${n}</button>`).join('')}
+      <div class="pie">Hola, ${esc(usuario)} · <a href="#" id="salir">Salir</a></div>
+    </nav>
+    <main class="main" id="main"></main></div>`;
+  $('#salir').addEventListener('click', async ev => { ev.preventDefault(); await api('salir', 'POST'); location.reload(); });
+  ir(location.hash.slice(1) || 'resumen');
+}
+function ir(v) {
+  if (!VISTAS.some(x => x[0] === v)) v = 'resumen';
+  vista = v; filtro = '';
+  if (location.hash.slice(1) !== v) history.replaceState(null, '', '#' + v);
+  document.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-current', t.dataset.v === v ? 'page' : 'false'));
+  pintar(); scrollTo(0, 0);
+}
+function pintar() { ({ resumen: vResumen, pedidos: vPedidos, clientes: vClientes, materiales: vMateriales, gastos: vGastos, ajustes: vAjustes })[vista](); }
+document.addEventListener('click', ev => { const t = ev.target.closest('.tab'); if (t) ir(t.dataset.v); });
+addEventListener('hashchange', () => { if (usuario) ir(location.hash.slice(1)); });
+
+/* ================= Resumen ================= */
+async function vResumen() {
+  const m = $('#main');
+  m.innerHTML = `<div class="cab"><h1>Resumen</h1><div class="acciones"><button class="btn" data-a="pegar">Pegar pedido de WhatsApp</button><button class="btn btn-2" data-a="nuevo-pedido">+ Pedido</button><button class="btn btn-2" data-a="nuevo-gasto">+ Gasto</button></div></div><p class="vacio">Cargando…</p>`;
+  let r; try { r = await api('resumen'); } catch (e) { m.querySelector('.vacio').textContent = e.message; return; }
+  const [a, mm] = r.mes.split('-'); const nombreMes = MESES[+mm - 1];
+  const beneficio = r.cobrado - r.gastado;
+  const totalF = Math.max(1, ...r.fases.map(f => f.n));
+  const meses = []; for (let i = 5; i >= 0; i--) { const d = new Date(+a, +mm - 1 - i, 1); meses.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`); }
+  const val = (arr, k) => (arr.find(x => x.m === k) || { v: 0 }).v;
+  const maxM = Math.max(1, ...meses.flatMap(k => [val(r.serie.cobros, k), val(r.serie.gastos, k)]));
+  m.innerHTML = `<div class="cab"><h1>Resumen de ${nombreMes}</h1><div class="acciones"><button class="btn" data-a="pegar">Pegar pedido de WhatsApp</button><button class="btn btn-2" data-a="nuevo-pedido">+ Pedido</button><button class="btn btn-2" data-a="nuevo-gasto">+ Gasto</button></div></div>
+  <div class="kpis">
+    <div class="kpi bien"><span>Cobrado este mes</span><b>${eur0(r.cobrado)}</b></div>
+    <div class="kpi"><span>Gastado este mes</span><b>${eur0(r.gastado)}</b></div>
+    <div class="kpi ${beneficio >= 0 ? 'bien' : 'mal'}"><span>Beneficio del mes</span><b>${eur0(beneficio)}</b><small>cobrado menos gastos</small></div>
+    <div class="kpi"><span>Pendiente de cobro</span><b>${eur0(r.pendiente)}</b><small>pedidos aceptados</small></div>
+    <div class="kpi"><span>Material en el taller</span><b>${eur0(r.valorStock)}</b><small>valor del stock</small></div>
+  </div>
+  <div class="dos">
+    <section class="tarjeta"><h2>Pedidos en marcha</h2>
+      ${FASES.filter(f => f[0] !== 'entregado').map(([id, n]) => { const c = (r.fases.find(x => x.fase === id) || { n: 0 }).n; return `<div class="barra"><span>${n}</span><i style="width:${c / totalF * 100}%"></i><em>${c}</em></div>`; }).join('')}
+    </section>
+    <section class="tarjeta"><h2>Cobros y gastos · 6 meses</h2>
+      <div class="meses">${meses.map(k => `<div class="mes" title="${k}: cobrado ${eur0(val(r.serie.cobros, k))}, gastado ${eur0(val(r.serie.gastos, k))}"><div class="pila"><i style="height:${val(r.serie.cobros, k) / maxM * 100}%"></i><i style="height:${val(r.serie.gastos, k) / maxM * 100}%"></i></div>${MESES[+k.slice(5) - 1]}</div>`).join('')}</div>
+      <div class="ley"><span><i style="background:var(--verde)"></i>Cobrado</span><span><i style="background:var(--rojo)"></i>Gastado</span></div>
+    </section>
+    <section class="tarjeta"><h2>Próximas entregas</h2>
+      ${r.entregas.length ? `<ul class="lista">${r.entregas.map(e => `<li><span><b>${esc(e.nombre || 'Sin cliente')}</b> · ${esc(e.trabajo || '')}<br><small>${esc(nomFase(e.fase))}</small></span><span class="num ${e.fecha_entrega < hoy() ? 'neg' : ''}">${fCorta(e.fecha_entrega)}</span></li>`).join('')}</ul>` : '<p class="vacio">No hay fechas comprometidas.</p>'}
+    </section>
+    <section class="tarjeta"><h2>Material bajo mínimos</h2>
+      ${r.stockBajo.length ? `<ul class="lista">${r.stockBajo.map(s => `<li><span>${esc(s.nombre)}</span><span class="num neg">${nfmt(s.stock)} ${esc(s.unidad)} <small>/ mín. ${nfmt(s.minimo)}</small></span></li>`).join('')}</ul>` : '<p class="vacio">Todo el material está por encima del mínimo.</p>'}
+    </section>
+  </div>
+  <section class="tarjeta" style="margin-top:14px"><h2>Últimos movimientos de dinero</h2>
+    ${r.ultimos.length ? `<ul class="lista">${r.ultimos.map(u => `<li><span>${esc(u.texto || '')}<br><small>${fCorta(u.fecha)} · ${u.tipo === 'cobro' ? 'Cobro' : 'Gasto'}</small></span><span class="num ${u.tipo === 'cobro' ? 'pos' : 'neg'}">${u.tipo === 'cobro' ? '+' : '−'}${eur(u.importe)}</span></li>`).join('')}</ul>` : '<p class="vacio">Todavía no hay cobros ni gastos. Empieza por apuntar un pedido o un gasto.</p>'}
+  </section>`;
+}
+
+/* ================= Pedidos ================= */
+function vPedidos() {
+  const q = filtro.toLowerCase();
+  const ps = D.pedidos.filter(p => !p.archivado && (!q || [p.cliente, p.trabajo, p.modelo, p.telefono, p.lugar].join(' ').toLowerCase().includes(q)));
+  $('#main').innerHTML = `<div class="cab"><h1>Pedidos</h1><div class="acciones"><input class="buscar" id="buscar" type="search" placeholder="Buscar cliente, modelo, teléfono…" value="${esc(filtro)}" aria-label="Buscar pedidos"><button class="btn" data-a="pegar">Pegar de WhatsApp</button><button class="btn btn-2" data-a="nuevo-pedido">+ Pedido</button></div></div>
+  <div class="tablero">${FASES.map(([id, n]) => { const l = ps.filter(p => p.fase === id); return `<section class="col" data-col="${id}"><h3>${n}<span>${l.length}</span></h3>${l.map(tarjetaPed).join('') || '<p class="vacio">Sin pedidos</p>'}</section>`; }).join('')}</div>
+  ${D.pedidos.some(p => p.archivado) ? `<p class="vacio">${D.pedidos.filter(p => p.archivado).length} pedidos archivados. <a href="#" data-a="ver-archivados">Verlos</a></p>` : ''}`;
+}
+function tarjetaPed(p) {
+  const tarde = p.fecha_entrega && p.fecha_entrega < hoy() && p.fase !== 'entregado';
+  const debe = p.precio > 0 && p.cobrado < p.precio && !['nuevo', 'medidas'].includes(p.fase);
+  return `<button class="ped" draggable="true" data-ped="${esc(p.id)}"><b>${esc(p.cliente || 'Sin cliente')}</b><span>${esc(p.trabajo || 'Sin trabajo')}${p.modelo ? ' · ' + esc(p.modelo) : ''}</span>
+    <span class="meta">${p.precio ? `<i class="chip">${eur0(p.precio)}</i>` : ''}${debe ? `<i class="chip ambar">Debe ${eur0(p.precio - p.cobrado)}</i>` : ''}${p.fecha_entrega ? `<i class="chip ${tarde ? 'rojo' : ''}">${tarde ? 'Retrasado · ' : ''}${fCorta(p.fecha_entrega)}</i>` : ''}</span></button>`;
+}
+let arrastra = null;
+document.addEventListener('dragstart', ev => { const t = ev.target.closest('.ped'); if (t) arrastra = t.dataset.ped; });
+document.addEventListener('dragover', ev => { const c = ev.target.closest('.col'); if (c && arrastra) { ev.preventDefault(); document.querySelectorAll('.col.sobre').forEach(x => x !== c && x.classList.remove('sobre')); c.classList.add('sobre'); } });
+document.addEventListener('drop', async ev => { const c = ev.target.closest('.col'); if (c && arrastra) { ev.preventDefault(); const p = D.pedidos.find(x => x.id === arrastra); arrastra = null; if (p && p.fase !== c.dataset.col) await cambiarFase(p, c.dataset.col); else pintar(); } });
+document.addEventListener('dragend', () => { arrastra = null; document.querySelectorAll('.col.sobre').forEach(x => x.classList.remove('sobre')); });
+async function cambiarFase(p, fase) {
+  const hist = JSON.parse(p.historial || '[]'); hist.push({ fase, dia: hoy(), por: usuario });
+  await api('pedidos/' + p.id, 'PUT', { fase, historial: hist });
+  p.fase = fase; p.historial = JSON.stringify(hist); aviso(`${p.cliente || 'Pedido'}: ${nomFase(fase)}`); if (vista === 'pedidos') pintar();
+}
+
+/* ---- Ficha del pedido ---- */
+function abrir(html) { $('#caja').innerHTML = html; $('#modal').hidden = false; $('#caja').querySelector('input,select,textarea')?.focus(); }
+function cerrar() { $('#modal').hidden = true; $('#caja').innerHTML = ''; }
+$('#modal').addEventListener('mousedown', ev => { if (ev.target.id === 'modal') cerrar(); });
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !$('#modal').hidden) cerrar(); });
+const campo = (n, etq, v, tipo = 'text', extra = '') => `<label class="fld ${extra}"><span>${esc(etq)}</span><input name="${n}" type="${tipo}" value="${esc(v ?? '')}" ${tipo === 'number' ? 'step="any" inputmode="decimal"' : ''}></label>`;
+const selector = (n, etq, v, ops, extra = '') => `<label class="fld ${extra}"><span>${esc(etq)}</span><select name="${n}">${ops.map(o => { const [val, txt] = Array.isArray(o) ? o : [o, o]; return `<option value="${esc(val)}" ${String(val) === String(v ?? '') ? 'selected' : ''}>${esc(txt)}</option>`; }).join('')}</select></label>`;
+const medidasLista = () => String(D.ajustes.medidas || '').split('\n').map(s => s.trim()).filter(Boolean);
+
+async function fichaPedido(idp) {
+  let f = { pedido: { fase: 'nuevo', medidas: '{}', historial: '[]' }, cobros: [], material: [], gastos: [] };
+  if (idp) f = await api(`pedidos/${idp}/ficha`);
+  const p = f.pedido, med = JSON.parse(p.medidas || '{}');
+  const cobrado = f.cobros.reduce((s, c) => s + c.importe, 0), cMat = f.material.reduce((s, m) => s + m.cantidad * m.coste_unit, 0), cGas = f.gastos.reduce((s, g) => s + g.importe, 0);
+  const margen = (p.precio || 0) - cMat - cGas;
+  const cli = D.clientes.find(c => c.id === p.cliente_id);
+  abrir(`<div class="cab"><h2 style="margin:0">${idp ? esc(p.cliente || 'Pedido') : 'Pedido nuevo'}</h2><div class="acciones">${idp && cli?.telefono ? `<a class="btn btn-sm" target="_blank" rel="noopener" href="${enlaceAviso(p, cli)}">Avisar por WhatsApp</a>` : ''}<button class="btn btn-2 btn-sm" data-a="cerrar" aria-label="Cerrar">✕</button></div></div>
+  ${idp ? `<div class="cuentas"><div><span>Precio</span><b>${eur0(p.precio)}</b></div><div><span>Cobrado</span><b class="${cobrado >= p.precio && p.precio ? 'pos' : ''}">${eur0(cobrado)}</b></div><div><span>Material + gastos</span><b>${eur0(cMat + cGas)}</b></div><div><span>Margen</span><b class="${margen >= 0 ? 'pos' : 'neg'}">${eur0(margen)}</b></div></div>` : ''}
+  <form id="fped" class="form">
+    <div class="fld ancho"><span style="display:block;font-size:14px;color:var(--soft);margin-bottom:4px;font-weight:500">Fase</span><div class="fases">${FASES.map(([id, n]) => `<button type="button" data-fase="${id}" aria-pressed="${p.fase === id}">${n}</button>`).join('')}</div><input type="hidden" name="fase" value="${esc(p.fase)}"></div>
+    ${selector('cliente_id', 'Cliente', p.cliente_id, [['', '— Elige o crea uno —'], ...D.clientes.map(c => [c.id, c.nombre + (c.telefono ? ' · ' + c.telefono : '')]), ['__nuevo', '+ Cliente nuevo']], 'ancho')}
+    <div class="ancho form" id="nuevoCli" hidden>${campo('n_nombre', 'Nombre del cliente', '')}${campo('n_telefono', 'Teléfono', '', 'tel')}${campo('n_lugar', 'Dónde está la caravana', '')}${campo('n_modelo', 'Marca y modelo', '')}</div>
+    ${campo('trabajo', 'Trabajo', p.trabajo)}${campo('colores', 'Colores / tela', p.colores)}
+    ${campo('estructura', 'Estructura', p.estructura)}${campo('montaje', 'Montaje', p.montaje)}
+    ${campo('precio', 'Precio total (€)', p.precio || '', 'number')}${campo('fecha_entrega', 'Fecha comprometida', p.fecha_entrega, 'date')}
+    ${campo('carril', 'Carril según el cliente (cm)', p.carril)}
+    <div class="ancho seccion" style="margin-top:4px"><h3>Hoja de medidas</h3><div class="form">${medidasLista().map(mn => `<label class="fld"><span>${esc(mn)}</span><input data-med="${esc(mn)}" inputmode="decimal" value="${esc(med[mn] ?? '')}"></label>`).join('')}</div></div>
+    <label class="fld ancho"><span>Notas</span><textarea name="notas">${esc(p.notas)}</textarea></label>
+    <div class="ancho acciones"><button class="btn">Guardar pedido</button>${idp ? `<button type="button" class="btn btn-2" data-a="archivar-ped">${p.archivado ? 'Desarchivar' : 'Archivar'}</button><button type="button" class="btn btn-rojo" data-a="borrar-ped">Borrar</button>` : ''}</div>
+    <p class="error ancho" id="eped"></p>
+  </form>
+  ${idp ? `<div class="seccion"><h3>Cobros</h3>
+    ${f.cobros.length ? `<ul class="lista">${f.cobros.map(c => `<li><span>${esc(c.concepto || 'Cobro')} · ${esc(c.metodo || '')}<br><small>${fCorta(c.fecha)}</small></span><span class="num pos">${eur(c.importe)} <button class="btn btn-rojo btn-sm" data-borrar-cobro="${esc(c.id)}" aria-label="Borrar cobro">✕</button></span></li>`).join('')}</ul>` : '<p class="vacio">Sin cobros.</p>'}
+    <form id="fcob" class="form" style="margin-top:8px">${campo('importe', 'Importe (€)', p.precio ? Math.max(0, p.precio - cobrado) || '' : '', 'number')}${selector('metodo', 'Método', 'Bizum', METODOS)}${selector('concepto', 'Concepto', cobrado ? 'Pago final' : 'Señal', ['Señal', 'Pago final', 'Pago parcial'])}${campo('fecha', 'Fecha', hoy(), 'date')}<div class="ancho"><button class="btn">+ Apuntar cobro</button></div></form></div>
+  <div class="seccion"><h3>Material usado</h3>
+    ${f.material.length ? `<ul class="lista">${f.material.map(m => `<li><span>${esc(m.nombre)}<br><small>${fCorta(m.fecha)}</small></span><span class="num">${nfmt(m.cantidad)} ${esc(m.unidad)} · ${eur(m.cantidad * m.coste_unit)}</span></li>`).join('')}</ul>` : '<p class="vacio">Todavía no has sacado material para este pedido.</p>'}
+    ${D.materiales.length ? `<form id="fmat" class="form" style="margin-top:8px">${selector('material_id', 'Material', '', D.materiales.map(m => [m.id, `${m.nombre} (quedan ${nfmt(m.stock)} ${m.unidad})`]))}${campo('cantidad', 'Cantidad', '', 'number')}<div class="ancho"><button class="btn btn-2">− Sacar del stock para este pedido</button></div></form>` : '<p class="vacio">Da de alta tus materiales en la sección Material para controlar el gasto por pedido.</p>'}</div>
+  ${f.gastos.length ? `<div class="seccion"><h3>Otros gastos del pedido</h3><ul class="lista">${f.gastos.map(g => `<li><span>${esc(g.concepto)}<br><small>${fCorta(g.fecha)}</small></span><span class="num neg">${eur(g.importe)}</span></li>`).join('')}</ul></div>` : ''}
+  <div class="seccion"><h3>Historial</h3><ul class="lista">${JSON.parse(p.historial || '[]').map(h => `<li><span>${esc(nomFase(h.fase))}</span><small>${fCorta(h.dia)}${h.por ? ' · ' + esc(h.por) : ''}</small></li>`).join('') || '<li class="vacio">Sin cambios todavía.</li>'}</ul></div>` : ''}`);
+  $('#caja').dataset.id = idp || '';
+  const sel = $('#caja [name=cliente_id]'); sel.addEventListener('change', () => $('#nuevoCli').hidden = sel.value !== '__nuevo');
+  $('#caja .fases').addEventListener('click', ev => { const b = ev.target.closest('[data-fase]'); if (!b) return; $('#caja [name=fase]').value = b.dataset.fase; $('#caja .fases').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); });
+  $('#fped').addEventListener('submit', async ev => {
+    ev.preventDefault(); const fd = Object.fromEntries(new FormData(ev.target));
+    try {
+      let cid = fd.cliente_id;
+      if (cid === '__nuevo') {
+        if (!fd.n_nombre.trim()) throw new Error('Pon el nombre del cliente nuevo');
+        cid = (await api('clientes', 'POST', { nombre: fd.n_nombre, telefono: fd.n_telefono.replace(/\D/g, '').replace(/^34(?=\d{9}$)/, ''), lugar: fd.n_lugar, modelo: fd.n_modelo })).id;
+      }
+      const medidas = {}; $('#caja').querySelectorAll('[data-med]').forEach(i => { if (i.value.trim()) medidas[i.dataset.med] = i.value.trim(); });
+      const hist = JSON.parse(p.historial || '[]'); if (!idp || fd.fase !== p.fase) hist.push({ fase: fd.fase, dia: hoy(), por: usuario });
+      const datos = { cliente_id: cid || null, trabajo: fd.trabajo, colores: fd.colores, estructura: fd.estructura, montaje: fd.montaje, precio: fd.precio || 0, fecha_entrega: fd.fecha_entrega, carril: fd.carril, notas: fd.notas, fase: fd.fase, medidas, historial: hist };
+      if (idp) await api('pedidos/' + idp, 'PUT', datos); else { datos.origen = 'panel'; await api('pedidos', 'POST', datos); }
+      await cargar('clientes', 'pedidos'); aviso('Pedido guardado'); cerrar(); pintar();
+    } catch (e) { $('#eped').textContent = e.message; }
+  });
+  $('#fcob')?.addEventListener('submit', async ev => {
+    ev.preventDefault(); const fd = Object.fromEntries(new FormData(ev.target));
+    try { if (!(+fd.importe > 0)) throw new Error('Pon el importe del cobro'); await api('cobros', 'POST', { ...fd, pedido_id: idp }); await cargar('pedidos', 'cobros'); aviso('Cobro apuntado'); fichaPedido(idp); }
+    catch (e) { aviso(e.message); }
+  });
+  $('#fmat')?.addEventListener('submit', async ev => {
+    ev.preventDefault(); const fd = Object.fromEntries(new FormData(ev.target));
+    try { if (!(+fd.cantidad > 0)) throw new Error('Pon la cantidad'); await api('movimientos', 'POST', { ...fd, tipo: 'salida', pedido_id: idp }); await cargar('materiales'); aviso('Material descontado'); fichaPedido(idp); }
+    catch (e) { aviso(e.message); }
+  });
+}
+function enlaceAviso(p, cli) {
+  const plantilla = D.ajustes['aviso_' + p.fase] || D.ajustes.aviso_otro;
+  const t = plantilla.replace(/\{nombre\}/g, cli.nombre || '').replace(/\{trabajo\}/g, (p.trabajo || 'pedido').toLowerCase()).replace(/\{lugar\}/g, cli.lugar || 'tu camping');
+  return `https://wa.me/34${encodeURIComponent(cli.telefono)}?text=${encodeURIComponent(t)}`;
+}
+
+/* ---- Pegar pedido de la web (código PTD1) ---- */
+function decodificar(txt) {
+  const m = String(txt).match(/PTD1-([A-Za-z0-9_-]+)/); if (!m) return null;
+  try { const s = atob(m[1].replace(/-/g, '+').replace(/_/g, '/')); return JSON.parse(new TextDecoder().decode(Uint8Array.from(s, c => c.charCodeAt(0)))); } catch { return null; }
+}
+function abrirPegar() {
+  abrir(`<div class="cab"><h2 style="margin:0">Pegar pedido de WhatsApp</h2><button class="btn btn-2 btn-sm" data-a="cerrar" aria-label="Cerrar">✕</button></div>
+  <p>Copia el mensaje que te ha llegado desde el presupuesto de la web (o solo la línea que empieza por <b>PTD1-</b>) y pégalo aquí.</p>
+  <label class="fld"><span>Mensaje</span><textarea id="pegado" rows="6"></textarea></label><p class="error" id="epeg"></p>
+  <button class="btn" id="importar">Añadir al panel</button>`);
+  $('#importar').addEventListener('click', async () => {
+    const o = decodificar($('#pegado').value);
+    if (!o || !o.nombre) { $('#epeg').textContent = 'No encuentro el código del pedido. Tiene que llevar «PTD1-».'; return; }
+    try {
+      const tel = String(o.telefono || '').replace(/\D/g, '');
+      let cli = D.clientes.find(c => tel && c.telefono === tel);
+      if (!cli) cli = { id: (await api('clientes', 'POST', { nombre: o.nombre, telefono: tel, lugar: o.lugar, vehiculo: o.vehiculo, modelo: o.modelo })).id };
+      if (D.pedidos.some(p => p.cliente_id === cli.id && p.trabajo === o.trabajo && !p.archivado && p.fase !== 'entregado')) throw new Error('Este cliente ya tiene ese pedido en marcha.');
+      const r = await api('pedidos', 'POST', { cliente_id: cli.id, trabajo: o.trabajo, colores: o.colores, estructura: o.estructura, montaje: o.montaje, carril: o.carril, notas: o.cuando ? 'Lo quiere: ' + o.cuando : '', fase: 'nuevo', origen: 'web', historial: [{ fase: 'nuevo', dia: hoy(), por: usuario }] });
+      await cargar('clientes', 'pedidos'); aviso(`Pedido de ${o.nombre} añadido`); fichaPedido(r.id);
+    } catch (e) { $('#epeg').textContent = e.message; }
+  });
+}
+
+/* ================= Clientes (CRM) ================= */
+function vClientes() {
+  const q = filtro.toLowerCase();
+  const cs = D.clientes.filter(c => !q || [c.nombre, c.telefono, c.lugar, c.modelo, c.email].join(' ').toLowerCase().includes(q));
+  const fact = id => D.cobros.filter(c => D.pedidos.find(p => p.id === c.pedido_id)?.cliente_id === id).reduce((s, c) => s + c.importe, 0);
+  $('#main').innerHTML = `<div class="cab"><h1>Clientes <small style="font:500 16px Barlow;color:var(--soft)">${D.clientes.length}</small></h1><div class="acciones"><input class="buscar" id="buscar" type="search" placeholder="Buscar nombre, teléfono, camping…" value="${esc(filtro)}" aria-label="Buscar clientes"><button class="btn" data-a="nuevo-cliente">+ Cliente</button></div></div>
+  <div class="tarjeta">${cs.length ? `<table class="tabla apila"><thead><tr><th>Cliente</th><th>Teléfono</th><th class="ocultar">Dónde</th><th class="ocultar">Vehículo</th><th class="num">Pedidos</th><th class="num">Pagado</th></tr></thead><tbody>
+  ${cs.map(c => `<tr class="clic" data-cli="${esc(c.id)}"><td><b>${esc(c.nombre)}</b></td><td>${esc(c.telefono || '')}</td><td class="ocultar">${esc(c.lugar || '')}</td><td class="ocultar">${esc(c.modelo || '')}</td><td class="num">${c.pedidos}</td><td class="num">${eur0(fact(c.id))}</td></tr>`).join('')}</tbody></table>` : '<p class="vacio">Todavía no hay clientes. Se crean solos al pegar un pedido de la web, o con «+ Cliente».</p>'}</div>`;
+}
+function fichaCliente(idc) {
+  const c = D.clientes.find(x => x.id === idc) || {};
+  const ps = D.pedidos.filter(p => p.cliente_id === idc);
+  const pagado = D.cobros.filter(x => ps.some(p => p.id === x.pedido_id)).reduce((s, x) => s + x.importe, 0);
+  const debe = ps.filter(p => !['nuevo', 'medidas'].includes(p.fase)).reduce((s, p) => s + Math.max(0, p.precio - p.cobrado), 0);
+  abrir(`<div class="cab"><h2 style="margin:0">${idc ? esc(c.nombre) : 'Cliente nuevo'}</h2><div class="acciones">${c.telefono ? `<a class="btn btn-sm" target="_blank" rel="noopener" href="https://wa.me/34${esc(c.telefono)}">WhatsApp</a><a class="btn btn-2 btn-sm" href="tel:+34${esc(c.telefono)}">Llamar</a>` : ''}<button class="btn btn-2 btn-sm" data-a="cerrar" aria-label="Cerrar">✕</button></div></div>
+  ${idc ? `<div class="cuentas"><div><span>Pedidos</span><b>${ps.length}</b></div><div><span>Pagado</span><b class="pos">${eur0(pagado)}</b></div><div><span>Pendiente</span><b class="${debe ? 'neg' : ''}">${eur0(debe)}</b></div><div><span>Cliente desde</span><b>${fCorta(c.creado)}</b></div></div>` : ''}
+  <form id="fcli" class="form">${campo('nombre', 'Nombre', c.nombre)}${campo('telefono', 'Teléfono', c.telefono, 'tel')}${campo('email', 'Email', c.email, 'email')}${campo('lugar', 'Camping o población', c.lugar)}${campo('vehiculo', 'Vehículo', c.vehiculo)}${campo('modelo', 'Marca y modelo', c.modelo)}
+  <label class="fld ancho"><span>Notas</span><textarea name="notas">${esc(c.notas)}</textarea></label>
+  <div class="ancho acciones"><button class="btn">Guardar cliente</button>${idc ? '<button type="button" class="btn btn-2" data-a="pedido-cliente">+ Pedido para este cliente</button><button type="button" class="btn btn-rojo" data-a="borrar-cli">Borrar</button>' : ''}</div><p class="error ancho" id="ecli"></p></form>
+  ${idc ? `<div class="seccion"><h3>Pedidos</h3>${ps.length ? `<ul class="lista">${ps.map(p => `<li><a href="#" data-ped="${esc(p.id)}">${esc(p.trabajo || 'Pedido')}</a><span class="num">${esc(nomFase(p.fase))} · ${eur0(p.precio)}</span></li>`).join('')}</ul>` : '<p class="vacio">Sin pedidos.</p>'}</div>` : ''}`);
+  $('#caja').dataset.id = idc || '';
+  $('#fcli').addEventListener('submit', async ev => {
+    ev.preventDefault(); const fd = Object.fromEntries(new FormData(ev.target)); fd.telefono = fd.telefono.replace(/\D/g, '').replace(/^34(?=\d{9}$)/, '');
+    try { if (idc) await api('clientes/' + idc, 'PUT', fd); else await api('clientes', 'POST', fd); await cargar('clientes'); aviso('Cliente guardado'); cerrar(); pintar(); }
+    catch (e) { $('#ecli').textContent = e.message; }
+  });
+}
+
+/* ================= Materiales ================= */
+function vMateriales() {
+  const q = filtro.toLowerCase();
+  const ms = D.materiales.filter(m => !q || [m.nombre, m.categoria, m.proveedor].join(' ').toLowerCase().includes(q));
+  const valor = D.materiales.reduce((s, m) => s + m.stock * m.coste, 0);
+  $('#main').innerHTML = `<div class="cab"><h1>Material</h1><div class="acciones"><input class="buscar" id="buscar" type="search" placeholder="Buscar lona, cremallera, proveedor…" value="${esc(filtro)}" aria-label="Buscar material"><button class="btn" data-a="nuevo-material">+ Material</button></div></div>
+  <div class="kpis"><div class="kpi"><span>Valor del stock</span><b>${eur0(valor)}</b></div><div class="kpi ${D.materiales.some(m => m.stock <= m.minimo) ? 'mal' : ''}"><span>Bajo mínimos</span><b>${D.materiales.filter(m => m.stock <= m.minimo).length}</b></div><div class="kpi"><span>Materiales</span><b>${D.materiales.length}</b></div></div>
+  <div class="tarjeta">${ms.length ? `<table class="tabla apila"><thead><tr><th>Material</th><th class="num">Stock</th><th class="num ocultar">Mínimo</th><th class="num ocultar">Coste medio</th><th class="num ocultar">Valor</th><th></th></tr></thead><tbody>
+  ${ms.map(m => `<tr><td class="clic" data-mat="${esc(m.id)}" style="cursor:pointer"><b>${esc(m.nombre)}</b><br><small style="color:var(--soft)">${esc(m.categoria || '')}${m.proveedor ? ' · ' + esc(m.proveedor) : ''}</small></td>
+    <td class="num"><b class="${m.stock <= m.minimo ? 'neg' : ''}">${nfmt(m.stock)} ${esc(m.unidad)}</b>${m.stock <= m.minimo ? '<br><i class="chip rojo">Reponer</i>' : ''}</td>
+    <td class="num ocultar">${nfmt(m.minimo)}</td><td class="num ocultar">${eur(m.coste)}/${esc(m.unidad)}</td><td class="num ocultar">${eur0(m.stock * m.coste)}</td>
+    <td class="num"><button class="btn btn-sm" data-mov="entrada" data-id="${esc(m.id)}">+ Entrada</button> <button class="btn btn-2 btn-sm" data-mov="salida" data-id="${esc(m.id)}">− Salida</button></td></tr>`).join('')}</tbody></table>`
+  : '<p class="vacio">Da de alta lo que usas en el taller (lona PVC Trevira, tubo de acero, cremalleras, cristal, mosquitera, hilo…) con su stock y su coste. Así sabrás lo que gastas en cada pedido y cuándo reponer.</p>'}</div>`;
+}
+function fichaMaterial(idm) {
+  const m = D.materiales.find(x => x.id === idm) || { unidad: 'm', stock: 0, minimo: 0, coste: 0 };
+  abrir(`<div class="cab"><h2 style="margin:0">${idm ? esc(m.nombre) : 'Material nuevo'}</h2><button class="btn btn-2 btn-sm" data-a="cerrar" aria-label="Cerrar">✕</button></div>
+  <form id="fmatf" class="form">${campo('nombre', 'Nombre', m.nombre)}${campo('categoria', 'Categoría', m.categoria)}
+  ${selector('unidad', 'Unidad', m.unidad, UNIDADES)}${idm ? '' : campo('stock', 'Stock inicial', m.stock, 'number')}
+  ${campo('minimo', 'Avisar cuando queden menos de', m.minimo, 'number')}${campo('coste', 'Coste por unidad (€)', m.coste, 'number')}
+  ${campo('proveedor', 'Proveedor', m.proveedor)}<label class="fld ancho"><span>Notas</span><textarea name="notas">${esc(m.notas)}</textarea></label>
+  <div class="ancho acciones"><button class="btn">Guardar</button>${idm ? `<button type="button" class="btn btn-2" data-mov="ajuste" data-id="${esc(idm)}">Hacer recuento</button><button type="button" class="btn btn-rojo" data-a="borrar-mat">Borrar</button>` : ''}</div><p class="error ancho" id="emat"></p></form>
+  ${idm ? '<div class="seccion"><h3>Movimientos</h3><div id="movs" class="vacio">Cargando…</div></div>' : ''}`);
+  $('#caja').dataset.id = idm || '';
+  $('#fmatf').addEventListener('submit', async ev => {
+    ev.preventDefault(); const fd = Object.fromEntries(new FormData(ev.target));
+    try { if (idm) await api('materiales/' + idm, 'PUT', fd); else await api('materiales', 'POST', fd); await cargar('materiales'); aviso('Material guardado'); cerrar(); pintar(); }
+    catch (e) { $('#emat').textContent = e.message; }
+  });
+  if (idm) api('movimientos?material=' + encodeURIComponent(idm)).then(mv => {
+    $('#movs').outerHTML = mv.length ? `<ul class="lista">${mv.map(x => { const p = D.pedidos.find(y => y.id === x.pedido_id); return `<li><span>${x.tipo === 'entrada' ? 'Entrada' : x.tipo === 'salida' ? 'Salida' : 'Recuento'}${p ? ' · ' + esc(p.cliente || p.trabajo) : ''}${x.nota ? ' · ' + esc(x.nota) : ''}<br><small>${fCorta(x.fecha)}</small></span><span class="num ${x.tipo === 'entrada' ? 'pos' : x.tipo === 'salida' ? 'neg' : ''}">${x.tipo === 'entrada' ? '+' : x.tipo === 'salida' ? '−' : '='}${nfmt(x.cantidad)} ${esc(m.unidad)}</span></li>`; }).join('')}</ul>` : '<p class="vacio">Sin movimientos.</p>';
+  });
+}
+function movimiento(tipo, idm) {
+  const m = D.materiales.find(x => x.id === idm); if (!m) return;
+  const tit = { entrada: 'Entrada (compra)', salida: 'Salida', ajuste: 'Recuento' }[tipo];
+  abrir(`<div class="cab"><h2 style="margin:0">${tit}: ${esc(m.nombre)}</h2><button class="btn btn-2 btn-sm" data-a="cerrar" aria-label="Cerrar">✕</button></div>
+  <p style="color:var(--soft)">Ahora hay <b>${nfmt(m.stock)} ${esc(m.unidad)}</b>.</p>
+  <form id="fmov" class="form">${campo('cantidad', tipo === 'ajuste' ? `Cantidad real contada (${m.unidad})` : `Cantidad (${m.unidad})`, '', 'number')}${campo('fecha', 'Fecha', hoy(), 'date')}
+  ${tipo === 'entrada' ? `${campo('coste_unit', `Precio por ${m.unidad} (€)`, m.coste || '', 'number')}${campo('proveedor', 'Proveedor', m.proveedor)}<label class="fld ancho"><span><input type="checkbox" name="apuntar_gasto" checked> Apuntar la compra en Gastos</span></label>` : ''}
+  ${tipo === 'salida' ? selector('pedido_id', 'Para el pedido (opcional)', '', [['', '— Sin pedido —'], ...D.pedidos.filter(p => !p.archivado && p.fase !== 'entregado').map(p => [p.id, `${p.cliente || 'Sin cliente'} · ${p.trabajo || ''}`])]) : ''}
+  ${campo('nota', 'Nota', '', 'text', 'ancho')}<div class="ancho"><button class="btn">Guardar</button></div><p class="error ancho" id="emov"></p></form>`);
+  $('#fmov').addEventListener('submit', async ev => {
+    ev.preventDefault(); const fd = Object.fromEntries(new FormData(ev.target));
+    try { if (!(+fd.cantidad > 0) && tipo !== 'ajuste') throw new Error('Pon la cantidad'); await api('movimientos', 'POST', { ...fd, tipo, material_id: idm, apuntar_gasto: !!fd.apuntar_gasto });
+      await cargar('materiales', 'gastos'); aviso('Stock actualizado'); cerrar(); pintar(); }
+    catch (e) { $('#emov').textContent = e.message; }
+  });
+}
+
+/* ================= Gastos ================= */
+let mesGastos = hoy().slice(0, 7);
+function vGastos() {
+  const gs = D.gastos.filter(g => g.fecha.slice(0, 7) === mesGastos);
+  const total = gs.reduce((s, g) => s + g.importe, 0);
+  const porCat = CAT_GASTO.map(c => [c, gs.filter(g => (g.categoria || 'Otros') === c).reduce((s, g) => s + g.importe, 0)]).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]);
+  const maxC = Math.max(1, ...porCat.map(x => x[1]));
+  const meses = [...new Set([hoy().slice(0, 7), ...D.gastos.map(g => g.fecha.slice(0, 7))])].sort().reverse();
+  const [a, m] = mesGastos.split('-');
+  $('#main').innerHTML = `<div class="cab"><h1>Gastos</h1><div class="acciones"><select class="buscar" id="mesG" aria-label="Mes" style="max-width:180px">${meses.map(k => `<option value="${k}" ${k === mesGastos ? 'selected' : ''}>${MESES[+k.slice(5) - 1]} ${k.slice(0, 4)}</option>`).join('')}</select><button class="btn" data-a="nuevo-gasto">+ Gasto</button></div></div>
+  <div class="dos"><section class="tarjeta"><h2>${MESES[+m - 1]} ${a}: ${eur(total)}</h2>${porCat.length ? porCat.map(([c, v]) => `<div class="barra"><span>${esc(c)}</span><i style="width:${v / maxC * 100}%;background:var(--rojo)"></i><em style="min-width:70px">${eur0(v)}</em></div>`).join('') : '<p class="vacio">Sin gastos este mes.</p>'}</section>
+  <section class="tarjeta"><h2>Gastos del mes</h2>${gs.length ? `<ul class="lista">${gs.map(g => { const p = D.pedidos.find(x => x.id === g.pedido_id); return `<li class="clic" data-gas="${esc(g.id)}" style="cursor:pointer"><span>${esc(g.concepto)}<br><small>${fCorta(g.fecha)} · ${esc(g.categoria || 'Otros')}${g.proveedor ? ' · ' + esc(g.proveedor) : ''}${p ? ' · ' + esc(p.cliente || '') : ''}</small></span><span class="num neg">${eur(g.importe)}</span></li>`; }).join('')}</ul>` : '<p class="vacio">Apunta aquí lo que pagas: lona, gasolina, alquiler, herramientas… Las compras de material se apuntan solas al hacer una entrada.</p>'}</section></div>`;
+  $('#mesG').addEventListener('change', ev => { mesGastos = ev.target.value; vGastos(); });
+}
+function fichaGasto(idg) {
+  const g = D.gastos.find(x => x.id === idg) || { fecha: hoy(), categoria: 'Material' };
+  abrir(`<div class="cab"><h2 style="margin:0">${idg ? 'Gasto' : 'Gasto nuevo'}</h2><button class="btn btn-2 btn-sm" data-a="cerrar" aria-label="Cerrar">✕</button></div>
+  <form id="fgas" class="form">${campo('concepto', 'Concepto', g.concepto, 'text', 'ancho')}${campo('importe', 'Importe (€)', g.importe ?? '', 'number')}${campo('fecha', 'Fecha', g.fecha, 'date')}
+  ${selector('categoria', 'Categoría', g.categoria, CAT_GASTO)}${campo('proveedor', 'Proveedor', g.proveedor)}
+  ${selector('pedido_id', 'Asociado a un pedido (opcional)', g.pedido_id, [['', '— General del taller —'], ...D.pedidos.filter(p => !p.archivado).map(p => [p.id, `${p.cliente || 'Sin cliente'} · ${p.trabajo || ''}`])], 'ancho')}
+  <div class="ancho acciones"><button class="btn">Guardar</button>${idg ? '<button type="button" class="btn btn-rojo" data-a="borrar-gas">Borrar</button>' : ''}</div><p class="error ancho" id="egas"></p></form>`);
+  $('#caja').dataset.id = idg || '';
+  $('#fgas').addEventListener('submit', async ev => {
+    ev.preventDefault(); const fd = Object.fromEntries(new FormData(ev.target));
+    try { if (!(+fd.importe > 0)) throw new Error('Pon el importe'); fd.pedido_id = fd.pedido_id || null; if (idg) await api('gastos/' + idg, 'PUT', fd); else await api('gastos', 'POST', fd); await cargar('gastos'); aviso('Gasto guardado'); cerrar(); pintar(); }
+    catch (e) { $('#egas').textContent = e.message; }
+  });
+}
+
+/* ================= Ajustes ================= */
+async function vAjustes() {
+  const a = D.ajustes; let usuarios = [];
+  try { usuarios = await api('usuarios'); } catch {}
+  const viejo = (() => { try { return JSON.parse(localStorage.getItem('puntada-v1'))?.pedidos?.filter(p => !p.ejemplo) || []; } catch { return []; } })();
+  $('#main').innerHTML = `<div class="cab"><h1>Ajustes</h1><p style="margin:0">Hola, ${esc(usuario)} · <a href="#" id="salir2">Salir</a></p></div>
+  <div class="dos">
+  <form class="tarjeta form" id="faj"><h2 class="ancho">El taller</h2>${campo('whatsapp', 'WhatsApp del taller (con 34)', a.whatsapp, 'tel', 'ancho')}
+    <label class="fld ancho"><span>Medidas de la hoja (una por línea)</span><textarea name="medidas" rows="5">${esc(a.medidas)}</textarea></label>
+    ${['medidas', 'aceptado', 'montaje', 'listo', 'otro'].map(k => `<label class="fld ancho"><span>Aviso: ${k === 'otro' ? 'resto de fases' : esc(nomFase(k))}</span><textarea name="aviso_${k}" rows="2">${esc(a['aviso_' + k])}</textarea></label>`).join('')}
+    <p class="ancho vacio">En los avisos puedes usar {nombre}, {trabajo} y {lugar}.</p><div class="ancho"><button class="btn">Guardar ajustes</button></div></form>
+  <div class="rejilla">
+    <section class="tarjeta"><h2>Personas con acceso</h2><ul class="lista">${usuarios.map(u => `<li>${esc(u.nombre)}</li>`).join('')}</ul>
+      <form id="fusu" class="form" style="margin-top:10px">${campo('nombre', 'Nombre', '')}${campo('clave', 'Contraseña (mín. 8)', '', 'password')}<div class="ancho"><button class="btn btn-2">+ Dar acceso</button></div></form></section>
+    <section class="tarjeta"><h2>Mi contraseña</h2><form id="fcla" class="form">${campo('clave', 'Nueva contraseña (mín. 8)', '', 'password', 'ancho')}<div class="ancho"><button class="btn btn-2">Cambiar</button></div></form></section>
+    <section class="tarjeta"><h2>Copia de seguridad</h2><p class="vacio">Descarga todos los datos del panel en hojas de cálculo (CSV).</p>
+      <div class="acciones">${['clientes', 'pedidos', 'cobros', 'materiales', 'gastos'].map(t => `<button class="btn btn-2 btn-sm" data-csv="${t}">${t[0].toUpperCase() + t.slice(1)}</button>`).join('')}</div></section>
+    ${viejo.length ? `<section class="tarjeta"><h2>Tablero antiguo</h2><p>En este navegador hay ${viejo.length} pedidos del tablero anterior.</p><button class="btn" data-a="migrar">Traerlos al panel</button></section>` : ''}
+  </div></div>`;
+  $('#salir2').addEventListener('click', async ev => { ev.preventDefault(); await api('salir', 'POST'); location.reload(); });
+  $('#faj').addEventListener('submit', async ev => { ev.preventDefault(); const fd = Object.fromEntries(new FormData(ev.target)); fd.whatsapp = fd.whatsapp.replace(/\D/g, ''); try { await api('ajustes', 'PUT', fd); await cargarAjustes(); aviso('Ajustes guardados'); } catch (e) { aviso(e.message); } });
+  $('#fusu').addEventListener('submit', async ev => { ev.preventDefault(); try { await api('usuarios', 'POST', Object.fromEntries(new FormData(ev.target))); aviso('Acceso creado'); vAjustes(); } catch (e) { aviso(e.message); } });
+  $('#fcla').addEventListener('submit', async ev => { ev.preventDefault(); try { await api('clave', 'POST', Object.fromEntries(new FormData(ev.target))); aviso('Contraseña cambiada'); ev.target.reset(); } catch (e) { aviso(e.message); } });
+}
+function csv(tabla) {
+  const filas = D[tabla]; if (!filas.length) { aviso('No hay datos'); return; }
+  const cols = Object.keys(filas[0]);
+  const txt = [cols.join(';'), ...filas.map(f => cols.map(c => `"${String(f[c] ?? '').replace(/"/g, '""')}"`).join(';'))].join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + txt], { type: 'text/csv' })); a.download = `avances-${tabla}-${hoy()}.csv`; a.click();
+}
+async function migrar() {
+  let viejo = []; try { viejo = JSON.parse(localStorage.getItem('puntada-v1')).pedidos.filter(p => !p.ejemplo); } catch {}
+  let n = 0;
+  for (const o of viejo) {
+    let cli = D.clientes.find(c => o.telefono && c.telefono === o.telefono);
+    if (!cli) { cli = { id: (await api('clientes', 'POST', { nombre: o.nombre || 'Sin nombre', telefono: o.telefono, lugar: o.lugar, vehiculo: o.vehiculo, modelo: o.modelo })).id }; D.clientes.push({ ...cli, telefono: o.telefono }); }
+    await api('pedidos', 'POST', { cliente_id: cli.id, trabajo: o.trabajo, colores: o.colores, estructura: o.estructura, montaje: o.montaje, carril: o.carril, medidas: o.medidas || {}, fase: o.fase || 'nuevo', fecha_entrega: o.fecha || '', notas: o.notas, origen: 'tablero', historial: o.historial || [], archivado: o.archivado ? 1 : 0 });
+    n++;
+  }
+  await cargar('clientes', 'pedidos'); aviso(`${n} pedidos traídos al panel`); vAjustes();
+}
+
+/* ================= Acciones globales ================= */
+document.addEventListener('click', async ev => {
+  const t = ev.target;
+  const a = t.closest('[data-a]')?.dataset.a;
+  try {
+    if (a === 'cerrar') return cerrar();
+    if (a === 'pegar') return abrirPegar();
+    if (a === 'nuevo-pedido') return fichaPedido(null);
+    if (a === 'nuevo-cliente') return fichaCliente(null);
+    if (a === 'nuevo-material') return fichaMaterial(null);
+    if (a === 'nuevo-gasto') return fichaGasto(null);
+    if (a === 'migrar') return migrar();
+    if (a === 'ver-archivados') { ev.preventDefault(); return verArchivados(); }
+    if (a === 'pedido-cliente') { const cid = $('#caja').dataset.id; await fichaPedido(null); $('#caja [name=cliente_id]').value = cid; return; }
+    const idC = $('#caja')?.dataset.id;
+    if (a === 'archivar-ped') { const p = D.pedidos.find(x => x.id === idC); await api('pedidos/' + idC, 'PUT', { archivado: p.archivado ? 0 : 1 }); await cargar('pedidos'); cerrar(); pintar(); return aviso(p.archivado ? 'Pedido recuperado' : 'Pedido archivado'); }
+    if (a === 'borrar-ped') return confirmar('¿Borrar este pedido y sus cobros?', async () => { await api('pedidos/' + idC, 'DELETE'); await cargar('pedidos', 'cobros'); pintar(); });
+    if (a === 'borrar-cli') return confirmar('¿Borrar este cliente?', async () => { await api('clientes/' + idC, 'DELETE'); await cargar('clientes'); pintar(); });
+    if (a === 'borrar-mat') return confirmar('¿Borrar este material y su historial?', async () => { await api('materiales/' + idC, 'DELETE'); await cargar('materiales'); pintar(); });
+    if (a === 'borrar-gas') return confirmar('¿Borrar este gasto?', async () => { await api('gastos/' + idC, 'DELETE'); await cargar('gastos'); pintar(); });
+    const ped = t.closest('[data-ped]'); if (ped) { ev.preventDefault(); return fichaPedido(ped.dataset.ped); }
+    const cli = t.closest('[data-cli]'); if (cli) return fichaCliente(cli.dataset.cli);
+    const mat = t.closest('[data-mat]'); if (mat) return fichaMaterial(mat.dataset.mat);
+    const gas = t.closest('[data-gas]'); if (gas) return fichaGasto(gas.dataset.gas);
+    const mov = t.closest('[data-mov]'); if (mov) return movimiento(mov.dataset.mov, mov.dataset.id);
+    const bc = t.closest('[data-borrar-cobro]'); if (bc) return confirmar('¿Borrar este cobro?', async () => { const pid = $('#caja').dataset.id; await api('cobros/' + bc.dataset.borrarCobro, 'DELETE'); await cargar('pedidos', 'cobros'); fichaPedido(pid); }, true);
+    const cs = t.closest('[data-csv]'); if (cs) return csv(cs.dataset.csv);
+  } catch (e) { aviso(e.message); }
+});
+document.addEventListener('input', ev => {
+  if (ev.target.id !== 'buscar') return;
+  filtro = ev.target.value; const pos = ev.target.selectionStart; pintar(); const b = $('#buscar'); b.focus(); b.setSelectionRange(pos, pos);
+});
+function confirmar(texto, si, volver) {
+  const previo = $('#caja').innerHTML, abierto = !$('#modal').hidden, idPrev = $('#caja').dataset.id;
+  abrir(`<h2>${esc(texto)}</h2><p style="color:var(--soft)">No se puede deshacer.</p><div class="acciones"><button class="btn btn-rojo" id="si">Sí, borrar</button><button class="btn btn-2" id="no">Cancelar</button></div>`);
+  $('#caja').dataset.id = idPrev;
+  $('#si').addEventListener('click', async () => { try { await si(); if (!volver) { cerrar(); aviso('Borrado'); } } catch (e) { aviso(e.message); } });
+  $('#no').addEventListener('click', () => { if (abierto && previo) { cerrar(); if (volver) fichaPedido(idPrev); } else cerrar(); });
+}
+function verArchivados() {
+  const ps = D.pedidos.filter(p => p.archivado);
+  abrir(`<div class="cab"><h2 style="margin:0">Pedidos archivados</h2><button class="btn btn-2 btn-sm" data-a="cerrar" aria-label="Cerrar">✕</button></div><ul class="lista">${ps.map(p => `<li><a href="#" data-ped="${esc(p.id)}">${esc(p.cliente || 'Sin cliente')} · ${esc(p.trabajo || '')}</a><span class="num">${eur0(p.precio)}</span></li>`).join('')}</ul>`);
+}
+
+iniciar();
+}
+</script>
+</body>
+</html>
