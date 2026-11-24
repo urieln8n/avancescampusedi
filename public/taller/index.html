@@ -75,7 +75,7 @@ a{color:inherit}
 .vacio{color:var(--soft);font-size:14px;padding:6px 0}
 .num{font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
 .pos{color:var(--verde)}.neg{color:var(--rojo)}
-.chip{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--fondo2);color:var(--soft);white-space:nowrap}
+.chip{font-style:normal;display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--fondo2);color:var(--soft);white-space:nowrap}
 .chip.rojo{background:light-dark(#fde8e8,#3a1d1d);color:var(--rojo)}
 .chip.ambar{background:light-dark(#fff3d6,#3b3218);color:var(--ambar)}
 .chip.verde{background:light-dark(#e6f4e5,#1b2e1c);color:var(--verde)}
@@ -127,11 +127,11 @@ a{color:inherit}
 .acceso h1{color:var(--ink)}
 
 @media (max-width:860px){
+  .main{padding-bottom:110px}
   .app{grid-template-columns:minmax(0,1fr)}
   .lado{position:fixed;inset:auto 0 0 0;height:auto;z-index:20;flex-direction:row;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom));gap:0}
   .lado .marca,.lado .pie{display:none}
   .tab{flex-direction:column;gap:2px;min-height:52px;padding:4px 2px;font-size:11px;justify-content:center;text-align:center}
-  .tab[data-v=ajustes]{display:none}
   .dos,.form{grid-template-columns:minmax(0,1fr)}
   .cuentas{grid-template-columns:repeat(2,minmax(0,1fr))}
   .barra{grid-template-columns:110px minmax(0,1fr) 34px}
