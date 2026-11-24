@@ -1,0 +1,6 @@
+{
+  // Web estática de Avancés Campus en Cloudflare Workers (static assets)
+  "name": "avancescampusedi",
+  "compatibility_date": "2026-11-01",
+  "assets": { "directory": "./public" }
+}
