@@ -379,7 +379,7 @@ function ruta(){
   const h = location.hash.slice(1);
   const v = h === 'presupuesto' ? 'presupuesto' : h === 'taller' ? 'taller' : 'inicio';
   document.querySelectorAll('.vista').forEach(el => el.hidden = el.id !== 'v-' + v);
-  document.title = v === 'taller' ? 'Puntada · Taller' : 'Avancés Campus · Presupuesto';
+  document.title = v === 'taller' ? 'Puntada · Taller' : v === 'presupuesto' ? 'Pide presupuesto · Avancés Campus' : 'Avancés para caravana a medida en Barcelona | Avancés Campus';
   if (v === 'presupuesto') { if (paso >= PREGUNTAS.length && !resp.nombre) paso = 0; pintarPaso(); }
   if (v === 'taller') pintarTaller();
   scrollTo(0,0);
